@@ -15,12 +15,13 @@ class Channel:
         self.youtube = self.get_service()
         self.channel_id = channel_id
         self.channel = self.youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
-        self.title = self.channel['items'][0]['snippet']['title']
-        self.channel_description = self.channel['items'][0]['snippet']['description']
+        channel_info = self.channel['items'][0]
+        self.title = channel_info['snippet']['title']
+        self.channel_description = channel_info['snippet']['description']
         self.url = f'https://www.youtube.com/channel/{self.channel_id}'
-        self.channel_subs = self.channel['items'][0]["statistics"]["subscriberCount"]
-        self.video_count = self.channel['items'][0]["statistics"]["videoCount"]
-        self.chanel_views = self.channel['items'][0]["statistics"]["viewCount"]
+        self.channel_subs = channel_info["statistics"]["subscriberCount"]
+        self.video_count = channel_info["statistics"]["videoCount"]
+        self.chanel_views = channel_info["statistics"]["viewCount"]
 
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
