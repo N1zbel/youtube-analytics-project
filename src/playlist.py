@@ -1,6 +1,7 @@
 from datetime import timedelta
 from src.channel import Channel
 import os
+import isodate
 
 
 class PlayList:
@@ -34,26 +35,10 @@ class PlayList:
     def total_duration(self):
         total = timedelta()
         for video in self.videos:
-            duration = video.get('contentDetails').get('duration')
-            video_duration = self.new_duration(duration)
-            total += video_duration
+            iso_8601_duration = video['contentDetails']['duration']
+            duration = isodate.parse_duration(iso_8601_duration)
+            total += duration
         return total
-
-    @staticmethod
-    def new_duration(duration):
-        parts = duration[2:]
-        if 'M' in parts:
-            minutes = parts.split('M')
-            minutes = int(minutes[0])
-        else:
-            minutes = 0
-        if 'S' in parts:
-            seconds = parts.split('M')
-            seconds = int(seconds[1][:-1])
-        else:
-            seconds = 0
-        video_duration = timedelta(minutes=minutes, seconds=seconds)
-        return video_duration
 
     def show_best_video(self):
         best_video = max(self.videos, key=lambda video: video.get('statistics').get('likeCount'))
