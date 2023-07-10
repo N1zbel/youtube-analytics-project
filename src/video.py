@@ -11,19 +11,32 @@ class Video:
         view_count (int): Количество просмотров видео.
         like_count (int): Количество лайков видео.
         """
-        youtube = Channel.get_service().videos().list(
-            part='snippet,statistics', id=video_id
-        ).execute()
-        video_data = youtube.get('items')[0]
-        self.video_id = video_id
-        self.title = video_data.get('snippet').get('title')
-        self.url = f'https://www.youtube.com/watch?v={self.video_id}'
-        self.view_count = int(video_data.get('statistics').get('viewCount'))
-        self.like_count = int(video_data.get('statistics').get('likeCount'))
 
-    def __str__(self) -> str:
+        self.video_id = video_id
+        self.title = None
+        self.url = None
+        self.view_count = None
+        self.like_count = None
+        self.correct_id()
+
+    def __str__(self):
         """Возврат строкового значения названия канала"""
         return self.title
+
+    def correct_id(self):
+        """Метод проверяет можно ли получить данные о видео
+        если нет то выводит Exception error """
+        try:
+            youtube = Channel.get_service().videos().list(
+                part='snippet,statistics', id=self.video_id
+            ).execute()
+            video_data = youtube.get('items')[0]
+            self.title = video_data.get('snippet').get('title')
+            self.url = f'https://www.youtube.com/watch?v={self.video_id}'
+            self.view_count = int(video_data.get('statistics').get('viewCount'))
+            self.like_count = int(video_data.get('statistics').get('likeCount'))
+        except Exception:
+            print('Exception error : Невозможно получить данные о видео')
 
 
 class PLVideo(Video):
